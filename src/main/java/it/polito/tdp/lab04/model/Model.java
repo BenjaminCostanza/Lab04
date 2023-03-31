@@ -18,7 +18,29 @@ public class Model {
 		return this.corsoDAO.getTuttiICorsi();
 	}
 	
+	public List<Corso> getCorsiStudente(Studente s){
+		return this.corsoDAO.getCorsiStudente(s);
+	}
+	
 	public Studente getStudente(int matricola) {
 		return this.studenteDAO.getStudente(matricola);
+	}
+	
+	
+	public List<Studente> listaTuttiStudenti(){
+		return this.studenteDAO.listaTuttiStudenti();
+	}
+	
+	
+	public List<Studente> getIscrittiCorso(Corso corso){
+		return this.corsoDAO.getStudentiIscrittiAlCorso(corso);
+	}
+	
+	public Corso getCorsoDaNome(String nomeCorso){
+		return this.corsoDAO.getCorsoDaNome(nomeCorso);
+	}
+	
+	public boolean studenteIscrittoCorso(Studente s,Corso c) {
+		return this.corsoDAO.studenteIscrittoAlCorso(s, c);
 	}
 }

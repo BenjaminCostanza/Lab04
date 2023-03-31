@@ -48,5 +48,10 @@ public class Corso {
 		Corso other = (Corso) obj;
 		return Objects.equals(codins, other.codins);
 	}
+
+	@Override
+	public String toString() {
+		return codins + "  " + crediti + "  " + nome + "  " + pd ;
+	}
 	
 }

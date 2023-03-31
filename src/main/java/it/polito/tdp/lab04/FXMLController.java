@@ -57,12 +57,61 @@ public class FXMLController {
 
     @FXML
     void DoCercaCorsi(ActionEvent event) {
-
+    	TextAreaRisultati.clear();
+    	int matricola=0;
+    	try {
+    	matricola = Integer.parseInt(TextFieldMatricola.getText());
+    	}catch(NumberFormatException e) {
+    		TextAreaRisultati.setText("La matricola è composta da soli interi");
+    		return;
+    	}
+    	List<Corso> listaCorsiStudente = new LinkedList<Corso>();
+    	Studente s = this.model.getStudente(matricola);
+    	if(this.model.listaTuttiStudenti().contains(s)==false) { //Se lo studente non è presente notifico con messaggio di errore
+    		TextAreaRisultati.setText("La matricola inserita non è presente");
+    		return;
+    	}
+    	else {
+    		listaCorsiStudente = this.model.getCorsiStudente(s);
+    		if(listaCorsiStudente.size()==0) {
+    			TextAreaRisultati.setText("Lo studente non è iscritto a nessun corso");
+    		}
+    		else {
+    		for(Corso co : listaCorsiStudente) {
+    			TextAreaRisultati.appendText("" +co + "\n");
+    		 }
+    		}
+    	}
     }
 
     @FXML
     void DoCercaIscritti(ActionEvent event) {
-    	
+    	TextAreaRisultati.clear();
+    	TextFieldNome.clear();
+    	TextFiedlCognome.clear();
+    	List<Studente> listaStudentiIscritti = new LinkedList<Studente>();
+    	List<Studente> listaStudentiIscrittiCorso = new LinkedList<Studente>();
+    	String s = this.TendinaCorsi.getValue();
+    	if(s==null) {
+    		TextAreaRisultati.setText("Selezionare un corso!");
+    	}
+    	if(s.compareTo(" ")==0) { //Caso in cui non si seleziona nessun corso in particolare
+    		for(Corso c : this.model.getTuttiICorsi())
+    		listaStudentiIscrittiCorso = this.model.getIscrittiCorso(c);  //Prendo studenti iscritti a ogni singolo corso
+    		listaStudentiIscritti.addAll(listaStudentiIscrittiCorso); //Restituisco quindi tutti gli studenti
+    	}
+    	else { //Normale corso selezionato
+    		Corso c = this.model.getCorsoDaNome(s);
+    		listaStudentiIscritti= this.model.getIscrittiCorso(c);
+    	}
+    	if(listaStudentiIscritti.size()==0) {
+    		TextAreaRisultati.setText("Il corso non ha iscritti");
+    	}
+    	else {
+    	for(Studente st : listaStudentiIscritti) {
+    		TextAreaRisultati.appendText("" +st + "\n");
+    	 }
+    	}
 
     }
 
@@ -73,16 +122,36 @@ public class FXMLController {
 
     @FXML
     void DoReset(ActionEvent event) {
-
+      TextAreaRisultati.clear();
+      TextFiedlCognome.clear();
+      TextFieldNome.clear();
+      TextFieldMatricola.clear();
     }
 
     @FXML
     void DoVai(ActionEvent event) {
-    	int matricola = Integer.parseInt(TextFieldMatricola.getText());
-    	model.getStudente(matricola);
-    	TextFieldNome.setText(model.getStudente(matricola).getNome());
-    	TextFiedlCognome.setText(model.getStudente(matricola).getCognome());
-
+    	TextFieldNome.clear();
+    	TextFiedlCognome.clear();
+    	int matricola = 0;
+    	try {
+    	matricola = Integer.parseInt(TextFieldMatricola.getText());
+    	}catch(NumberFormatException e) {
+    		TextAreaRisultati.setText("La matricola è composta da soli interi");
+    	}
+    	Studente s = model.getStudente(matricola);
+    	TextFieldNome.setText(s.getNome());
+    	TextFiedlCognome.setText(s.getCognome());
+    	if(TendinaCorsi.getValue()!=null) {
+    	Corso c = this.model.getCorsoDaNome(TendinaCorsi.getValue());
+        if(c != null) {
+    	 if(this.model.studenteIscrittoCorso(s, c)==true) {
+    		TextAreaRisultati.setText("Lo studente è già iscritto al corso");
+    	 }
+    	 else {
+    		 TextAreaRisultati.setText("Lo studente non è iscritto al corso");
+    	 }
+        }
+    	}
     }
 
     public void setModel(Model model){
@@ -106,6 +175,9 @@ public class FXMLController {
         	TendinaCorsi.getItems().add(c.getNome());
         }
         TendinaCorsi.getItems().add(" ");
+        TextFieldNome.setEditable(false);
+        TextFiedlCognome.setEditable(false);
+        TextAreaRisultati.setEditable(false);
     }
 
 }
